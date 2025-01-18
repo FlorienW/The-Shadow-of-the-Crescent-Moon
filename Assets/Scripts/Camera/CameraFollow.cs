@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -34,7 +32,7 @@ public class CameraFollow : MonoBehaviour
 		originalPos = camTransform.localPosition;
 	}
 
-	private void Update()
+	private void FixedUpdate()
 	{
 		Vector3 newPosition = Target.position;
 		newPosition.z = -10;

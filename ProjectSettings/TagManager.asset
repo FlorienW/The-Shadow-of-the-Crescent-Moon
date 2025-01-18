@@ -2,8 +2,14 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Ground
+  - Player_Weapon
+  - Knight_Weapon
+  - Soldier_Weapon
+  - Priest_Projectile
+  - Wood_Ground
   layers:
   - Default
   - TransparentFX
@@ -41,3 +47,23 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: 1 Sky
+    uniqueID: 3736417553
+    locked: 0
+  - name: 2 BackClouds
+    uniqueID: 1700539867
+    locked: 0
+  - name: 3 Clouds
+    uniqueID: 2275150407
+    locked: 0
+  - name: 4 Grids
+    uniqueID: 4016941771
+    locked: 0
+  - name: 5 Player
+    uniqueID: 1892516917
+    locked: 0
+  - name: 6 Close Prompts
+    uniqueID: 2231692889
+    locked: 0
+  m_RenderingLayers:
+  - Default

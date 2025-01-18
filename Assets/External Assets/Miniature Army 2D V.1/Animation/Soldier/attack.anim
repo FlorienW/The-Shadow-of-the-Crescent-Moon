@@ -1111,7 +1111,7 @@ AnimationClip:
     m_Level: 0
     m_CycleOffset: 0
     m_HasAdditiveReferencePose: 0
-    m_LoopTime: 1
+    m_LoopTime: 0
     m_LoopBlend: 0
     m_LoopBlendOrientation: 0
     m_LoopBlendPositionY: 0
@@ -3984,7 +3984,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Body
+    path: Body/Front arm/Weapon
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -3996,7 +3996,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Body
+    path: Body/Front arm/Weapon
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -4008,7 +4008,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Body
+    path: Body/Front arm/Weapon
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -4056,10 +4056,10 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Body/Front arm/Weapon
+    path: Body
     classID: 4
     script: {fileID: 0}
-    flags: 16
+    flags: 0
   - serializedVersion: 2
     curve:
       serializedVersion: 2
@@ -4068,10 +4068,10 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Body/Front arm/Weapon
+    path: Body
     classID: 4
     script: {fileID: 0}
-    flags: 16
+    flags: 0
   - serializedVersion: 2
     curve:
       serializedVersion: 2
@@ -4080,10 +4080,24 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Body/Front arm/Weapon
+    path: Body
     classID: 4
     script: {fileID: 0}
-    flags: 16
+    flags: 0
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.33333334
+    functionName: ActivateWeaponCollider
+    data: 
+    objectReferenceParameter: {fileID: 11500000, guid: f971279e353d0594ba255fbf608b20a1, type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.38333333
+    functionName: DeactivateWeaponCollider
+    data: 
+    objectReferenceParameter: {fileID: 11500000, guid: f971279e353d0594ba255fbf608b20a1, type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

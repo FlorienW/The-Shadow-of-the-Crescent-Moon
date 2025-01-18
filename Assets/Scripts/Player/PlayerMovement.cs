@@ -5,6 +5,7 @@ namespace Player
 {
     public class PlayerMovement : MonoBehaviour
     {
+        //* ENCAPSULATION
         private static readonly int IsMovingB = Animator.StringToHash("Is_Moving_B");
         private static readonly int IsAttackingB = Animator.StringToHash("Is_Attacking_B");
         public float movementSpeed = 40f;
@@ -13,17 +14,21 @@ namespace Player
         private Rigidbody2D _rb;
         private float _horizontalInput;
         private bool _isDashAvailable = true;
-        [SerializeField]
-        private bool isGrounded = true;
+        public bool IsGrounded { get; set; }
         public float dashCooldown;
         private Animator _animator;
         [SerializeField]
         private BoxCollider2D[] boxColliders2D;
 
+        private Dash _dash;
+
+        //* ABSTRACTION
         private void Start()
         {
             _rb = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
+            StartCoroutine(DashCooldown());
+            _dash = GetComponent<Dash>();
         }
 
         private void Update()
@@ -57,24 +62,15 @@ namespace Player
                 _rb.linearVelocity = new Vector2(_horizontalInput * movementSpeed, _rb.linearVelocity.y);
             }
 
-            if (Input.GetButtonDown("Jump") && isGrounded)
+            if (Input.GetButtonDown("Jump") && IsGrounded)
             {
                 _rb.AddForceY(jumpForce,ForceMode2D.Impulse);
-                isGrounded = false;
+                IsGrounded = false;
             }
 
             if (Input.GetKeyDown(KeyCode.C) && _isDashAvailable)
             {
-                int horizontalDirection = _horizontalInput switch
-                {
-                    > 0 => 1,
-                    < 0 => -1,
-                    _ => transform.localScale == new Vector3(1, 1, 1) ? -1 : 1
-                };
-                int verticalDirection = (Input.GetKey(KeyCode.S)) ? -1 : (Input.GetKey(KeyCode.W)) ? 1 : 0;
-                Vector2 dashDirection = new Vector2(horizontalDirection, verticalDirection).normalized;
-                _rb.AddForce(dashDirection * dashForce, ForceMode2D.Impulse);
-                StartCoroutine(DashCooldown());
+                _dash.StartCoroutine(_dash.DashCoroutine());
             }
         }
     
@@ -82,11 +78,11 @@ namespace Player
         {
             if (collision.gameObject.CompareTag("Ground"))
             {
-                isGrounded = true;
+                IsGrounded = true;
             }
         }
 
-        IEnumerator DashCooldown()
+        public IEnumerator DashCooldown()
         {
             _isDashAvailable = false;
             yield return new WaitForSeconds(dashCooldown);

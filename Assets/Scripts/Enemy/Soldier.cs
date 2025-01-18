@@ -1,8 +1,6 @@
-
-
 namespace Enemy
 {
-    public class Soldier : Enemy
+    public class Soldier : Enemy//* INHERITANCE
     {
         
     }

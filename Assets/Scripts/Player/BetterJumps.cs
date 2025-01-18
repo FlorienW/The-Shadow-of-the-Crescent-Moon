@@ -1,27 +1,29 @@
 using UnityEngine;
 
-public class BetterJumps : MonoBehaviour
+namespace Player
 {
-    public float fallMultiplier = 2.5f;
-    public float lowJumpMultiplier = 2f;
-    Rigidbody2D rb;
+    public class BetterJumps : MonoBehaviour
+    {
+        public float fallMultiplier = 2.5f;
+        public float lowJumpMultiplier = 2f;
+        private Rigidbody2D _rb;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (rb.linearVelocity.y < 0)
+        //* ABSTRACTION
+        void Start()
         {
-            rb.linearVelocity += Vector2.up * (Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime);
+            _rb = GetComponent<Rigidbody2D>();
         }
-        else if (rb.linearVelocity.y > 0 && !Input.GetButton("Jump"))
+
+        void Update()
         {
-            rb.linearVelocity += Vector2.up * (Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime);
+            if (_rb.linearVelocity.y < 0)
+            {
+                _rb.linearVelocity += Vector2.up * (Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime);
+            }
+            else if (_rb.linearVelocity.y > 0 && !Input.GetButton("Jump"))
+            {
+                _rb.linearVelocity += Vector2.up * (Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime);
+            }
         }
     }
 }

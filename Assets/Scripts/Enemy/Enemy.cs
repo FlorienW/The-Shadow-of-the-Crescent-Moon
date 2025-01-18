@@ -1,13 +1,17 @@
 using System.Collections;
+using Audio;
 using UnityEngine;
 
 namespace Enemy
 {
     public class Enemy : MonoBehaviour
     {
+        //* ENCAPSULATION
         private static readonly int IsMovingB = Animator.StringToHash("Is_Moving_B");
-        private static readonly int IsAttackingB = Animator.StringToHash("Is_Attacking_B");
-
+        private static readonly int Attack = Animator.StringToHash("Attack");
+        private static readonly int Hurt = Animator.StringToHash("Hurt");
+        private static readonly int Die = Animator.StringToHash("Die");
+        
         [SerializeField]
         private Rigidbody2D _rb;
         [SerializeField]
@@ -27,15 +31,22 @@ namespace Enemy
         
         public GameObject player;
         public GameObject alertIcon;
+        public GameObject attackIcon;
+        public GameObject bloodParticle;
         
         [SerializeField]
         private Animator _animator;
         private readonly Vector3 _lookToTheRightDirection = new(-1, 1, 1);
         private readonly Vector3 _lookToTheLeftDirection = new(1, 1, 1);
+
+        public float enemyHealthPoint = 40;
+
+        public int debugCounter = 1;
         
         
+        public AudioClip[] daggerSlideAudioEffects;
         
-        
+        //* ABSTRACTION
         public void Start()
         {
             _rb = GetComponent<Rigidbody2D>();
@@ -149,7 +160,7 @@ namespace Enemy
 
         }
         
-        public IEnumerator ChaseThePlayer()
+        public virtual IEnumerator ChaseThePlayer()
         {
             if (Mathf.Approximately(Mathf.Sign(player.transform.position.x - transform.position.x), -movementDirection))
             {
@@ -158,7 +169,7 @@ namespace Enemy
                 AnimatorMovementStop();
                 yield return new WaitForSeconds(1f);
                 movementDirection = -temp;
-                LookToTheOppositeDirection();
+                LookSpecificDirection((int)temp);
                 AnimatorMovementStart();
                 StartCoroutine(ChaseThePlayer());
             }
@@ -174,9 +185,12 @@ namespace Enemy
             }
         }
 
-        public IEnumerator AttackToPlayer()
+        public virtual IEnumerator AttackToPlayer()
         {
             movementSpeed = 0;
+            attackIcon.SetActive(true);
+            yield return new WaitForSeconds(0.2f);
+            attackIcon.SetActive(false);
             AnimatorMovementStop();
             AnimatorAttack();
             yield return new WaitForSeconds(1f);
@@ -185,6 +199,61 @@ namespace Enemy
             StartCoroutine(ChaseThePlayer());
         }
 
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Player_Weapon"))
+            {
+                Debug.Log($"Player hit {debugCounter++} times.");
+                PlayDaggerSliceSoundEffect();
+                TakeDamage(5f);
+                CallBloodParticles
+                (
+                    (int)Mathf.Sign(other.transform.position.x - transform.position.x),
+                    other.gameObject.GetComponent<Collider2D>().ClosestPoint(transform.position)
+                );
+            }
+        }
+
+        public void TakeDamage(float damage)
+        {
+            enemyHealthPoint -= damage;
+            AnimatorTakeDamage();
+            HealthCheck();
+        }
+
+        public void CallBloodParticles(int direction, Vector2 destination)
+        {
+            Instantiate(bloodParticle, destination,
+                direction == 1 ? Quaternion.Euler(0f, 90, 0f) : Quaternion.Euler(0f, -90, 0f));
+        }
+
+        private void HealthCheck()
+        {
+            Debug.Log($"Enemy Has Left {enemyHealthPoint} HP.");
+            if (enemyHealthPoint < 1)
+            {
+                StopAllCoroutines();
+                InactivateAllIcons();
+                movementSpeed = 0;
+                AnimatorMovementStop();
+                InActivateAllEnemyColliders();
+                AnimatorDie();
+            }
+        }
+
+        public void InactivateAllIcons()
+        {
+            alertIcon.SetActive(false);
+            attackIcon.SetActive(false);
+        }
+
+        public virtual void InActivateAllEnemyColliders()
+        {
+            gameObject.GetComponent<CapsuleCollider2D>().enabled = false;
+            gameObject.GetComponent<CapsuleCollider2D>().attachedRigidbody.bodyType = RigidbodyType2D.Kinematic;
+            gameObject.transform.GetChild(0).transform.GetChild(2).transform.GetChild(0).gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        }
+        
         public void AnimatorMovementStop()
         {
             _animator.SetBool(IsMovingB, false);
@@ -197,8 +266,12 @@ namespace Enemy
 
         public void AnimatorAttack()
         {
-            _animator.SetBool(IsAttackingB, true);
-            _animator.SetBool(IsAttackingB, false);
+            _animator.SetTrigger(Attack);
+        }
+
+        public void AnimatorStopAttack()
+        {
+            _animator.ResetTrigger(Attack);
         }
 
         public void LookToTheRightDirection()
@@ -211,15 +284,27 @@ namespace Enemy
             transform.localScale = _lookToTheLeftDirection;
         }
 
-        public void LookToTheOppositeDirection()
-        {
-            transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-        }
-
         public void LookSpecificDirection(int direction)
         {
             transform.localScale = new Vector3(direction, transform.localScale.y, transform.localScale.z);
         }
+
+        public void AnimatorTakeDamage()
+        {
+            _animator.SetTrigger(Hurt);
+        }
+
+        public void AnimatorDie()
+        {
+            _animator.SetTrigger(Die);
+        }
+
+        public void PlayDaggerSliceSoundEffect()
+        {
+            int index = Random.Range(0, daggerSlideAudioEffects.Length);
+            AudioController.instance.PlayEffectAtPoint(daggerSlideAudioEffects[index], transform.position);
+        }
+        
 
     }
 }
